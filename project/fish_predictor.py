@@ -114,7 +114,8 @@ def overwrite(testX, testY, path="data/test/"):
         full_path = path + "/" + testY[i] + "_" + str(i) + ".jpg"
         cv2.imwrite(full_path, test_img)
 
-
+trainPath = "data/train/"
+testPath = "data/test/"
 # If overwrite data, then we preprocess it over again
 # If not overwrite data, then we use saved and preprocessed train and test data
 def fit_model(overwriteData=False):
@@ -124,9 +125,9 @@ def fit_model(overwriteData=False):
         trainX, testX, trainY, testY = train_test_split(
             images, labels, test_size=0.2, stratify=labels, random_state=42
         )
-        dsl.save(trainX, testX, trainY, testY)
+        dsl.save(trainX, testX, trainY, testY, trainPath, testPath)
     else:
-        trainX, testX, trainY, testY = dsl.load_from_disk()
+        trainX, testX, trainY, testY = dsl.load_from_disk(trainPath, testPath)
     images, labels = dsl.load(imagePaths)
 
     if overwriteTest:

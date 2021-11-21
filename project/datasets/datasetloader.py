@@ -31,7 +31,7 @@ class DatasetLoader:
         # return a tuple of the data and labels
         return (np.array(data), np.array(labels))
 
-    def load_from_disk(self, trainPath="data/train/", testPath="data/test/",):
+    def load_from_disk(self, trainPath, testPath,):
         pass
 
     def save(
@@ -40,8 +40,8 @@ class DatasetLoader:
         testX,
         trainY,
         testY,
-        trainPath="data/train/",
-        testPath="data/test/",
+        trainPath,
+        testPath,
     ):
         # remove previous saved train and test images
         train_file_list = glob.glob(os.path.join(trainPath, "*"))
