@@ -2,6 +2,7 @@ import matplotlib
 import numpy as np
 import cv2
 import os
+import csv
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.layers import Conv2D
@@ -18,6 +19,7 @@ from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import classification_report
 from datasets.datasetloader import DatasetLoader
 from preprocessing.preprocessor import SimplePreprocessor
+
 # from tensorflow.keras.optimizers import SGD
 # from tensorflow.keras.datasets import cifar10
 from imutils import paths
@@ -81,8 +83,8 @@ def convert(source, dest):
         image = cv2.resize(image, dsize, interpolation=cv2.INTER_AREA)
         if not os.path.exists(dest):
             os.mkdir(dest)
-        fish_class = imagePath.split('/')[-2]
-        fish_id = imagePath.split('/')[-1]
+        fish_class = imagePath.split("/")[-2]
+        fish_id = imagePath.split("/")[-1]
         if not os.path.exists(dest + "/{}".format(fish_class)):
             os.mkdir(dest + "/{}".format(fish_class))
         cv2.imwrite(dest + "/{0}/{1}".format(fish_class, fish_id), image)
@@ -91,31 +93,50 @@ def convert(source, dest):
 # convert("archive/NA_Fish_Dataset", "archive_converted_32"
 img_folder = "data/archive/NA_Fish_Dataset"
 preprocesssor = SimplePreprocessor(32, 32)
-dsl = DatasetLoader(preprocesssor)
+dsl = DatasetLoader([preprocesssor])
 imagePaths = sorted(list(paths.list_images("{}".format(img_folder))))
 
 # Reading images from disk and storing in RAM parameter
-def read(convFolder="archive_converted_32"):
-    images = []
-    labels = []
-    for imagePath in sorted(list(paths.list_images("{}".format(convFolder)))):
-        image = cv2.imread(imagePath)
-        image = img_to_array(image)
-        images.append(image)
-        labels.append(imagePath.split("/")[-2])
-    return images, labels
+# def read(convFolder="archive_converted_32"):
+#     images = []
+#     labels = []
+#     for imagePath in sorted(list(paths.list_images("{}".format(convFolder)))):
+#         image = cv2.imread(imagePath)
+#         image = img_to_array(image)
+#         images.append(image)
+#         labels.append(imagePath.split("/")[-2])
+#     return images, labels
 
 
-def fit_model():
-    images, labels = read()
+def overwrite(testX, testY, path="data/test/"):
+    # overwrite test images where image name == testY label
+    for (i, test_img) in enumerate(testX):
+        full_path = path + "/" + testY[i] + "_" + str(i) + ".jpg"
+        cv2.imwrite(full_path, test_img)
+
+
+# If overwrite data, then we preprocess it over again
+# If not overwrite data, then we use saved and preprocessed train and test data
+def fit_model(overwriteData=False):
+    # images, labels = read()
+    if overwriteData:
+        images, labels = dsl.load(imagePaths)
+        trainX, testX, trainY, testY = train_test_split(
+            images, labels, test_size=0.2, stratify=labels, random_state=42
+        )
+        dsl.save(trainX, testX, trainY, testY)
+    else:
+        trainX, testX, trainY, testY = dsl.load_from_disk()
+    images, labels = dsl.load(imagePaths)
+
+    if overwriteTest:
+        overwrite(testX, testY)
+    # cv2.imwrite("1.jpg", testX[0])
     images = np.array(images, dtype="float") / 255.0
     labels = np.array(labels)
     lb = LabelBinarizer().fit(labels)
     labels = lb.fit_transform(labels)
-    # split the data
-    trainX, testX, trainY, testY = train_test_split(
-        images, labels, test_size=0.2, stratify=labels, random_state=42
-    )
+
     print("[INFO] Training Network")
     model = MiniVGGNet.build(width=32, height=32, depth=3, classes=9)
     plot_model(model, to_file="lenet.png", show_shapes=True)
@@ -139,4 +160,4 @@ def fit_model():
     model.save("fish.hdf5")
 
 
-fit_model()
+fit_model(True)
