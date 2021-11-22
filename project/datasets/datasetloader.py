@@ -44,9 +44,9 @@ class DatasetLoader:
             # Example of preprocessed image name: '76_Shrimp.jpg'
             imageName = imagePath.split(os.path.sep)[-1]
             regex_label = re.search("[a-zA-Z ]+", imageName)
-            label = regex_label.group(0)      
+            label = regex_label.group(0)
             trainX.append(image)
-            trainY.append(label)  
+            trainY.append(label)
         test_file_list = glob.glob(os.path.join(testPath, "*"))
         for imagePath in test_file_list:
             image = cv2.imread(imagePath)

@@ -12,7 +12,6 @@ from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Dense
 from tensorflow.keras import backend as K
 from tensorflow.keras.utils import plot_model
-from tensorflow.keras.preprocessing.image import img_to_array
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import classification_report
