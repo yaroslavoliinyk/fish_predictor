@@ -2,7 +2,6 @@ import matplotlib
 import numpy as np
 import cv2
 import os
-import csv
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.layers import Conv2D
@@ -114,8 +113,11 @@ def overwrite(testX, testY, path="data/test/"):
         full_path = path + "/" + testY[i] + "_" + str(i) + ".jpg"
         cv2.imwrite(full_path, test_img)
 
+
 trainPath = "data/train/"
 testPath = "data/test/"
+
+
 # If overwrite data, then we preprocess it over again
 # If not overwrite data, then we use saved and preprocessed train and test data
 def fit_model(overwriteData=False):
@@ -128,15 +130,16 @@ def fit_model(overwriteData=False):
         dsl.save(trainX, testX, trainY, testY, trainPath, testPath)
     else:
         trainX, testX, trainY, testY = dsl.load_from_disk(trainPath, testPath)
-    images, labels = dsl.load(imagePaths)
 
-    if overwriteTest:
-        overwrite(testX, testY)
-    # cv2.imwrite("1.jpg", testX[0])
-    images = np.array(images, dtype="float") / 255.0
-    labels = np.array(labels)
-    lb = LabelBinarizer().fit(labels)
-    labels = lb.fit_transform(labels)
+    # Data convertation
+    trainX = np.array(trainX, dtype="float") / 255.0
+    testX = np.array(testX, dtype="float") / 255.0
+    trainY = np.array(trainY)
+    lb = LabelBinarizer().fit(trainY)
+    trainY = lb.fit_transform(trainY)
+    testY = np.array(testY)
+    lb = LabelBinarizer().fit(testY)
+    testY = lb.fit_transform(testY)
 
     print("[INFO] Training Network")
     model = MiniVGGNet.build(width=32, height=32, depth=3, classes=9)
@@ -161,4 +164,4 @@ def fit_model(overwriteData=False):
     model.save("fish.hdf5")
 
 
-fit_model(True)
+fit_model()
