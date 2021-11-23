@@ -17,9 +17,6 @@ from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import classification_report
 from datasets.datasetloader import DatasetLoader
 from preprocessing.preprocessor import SimplePreprocessor
-
-# from tensorflow.keras.optimizers import SGD
-# from tensorflow.keras.datasets import cifar10
 from imutils import paths
 
 
@@ -94,17 +91,6 @@ preprocesssor = SimplePreprocessor(32, 32)
 dsl = DatasetLoader([preprocesssor])
 imagePaths = sorted(list(paths.list_images("{}".format(img_folder))))
 
-# Reading images from disk and storing in RAM parameter
-# def read(convFolder="archive_converted_32"):
-#     images = []
-#     labels = []
-#     for imagePath in sorted(list(paths.list_images("{}".format(convFolder)))):
-#         image = cv2.imread(imagePath)
-#         image = img_to_array(image)
-#         images.append(image)
-#         labels.append(imagePath.split("/")[-2])
-#     return images, labels
-
 
 def overwrite(testX, testY, path="data/test/"):
     # overwrite test images where image name == testY label
@@ -142,7 +128,7 @@ def fit_model(overwriteData=False):
 
     print("[INFO] Training Network")
     model = MiniVGGNet.build(width=32, height=32, depth=3, classes=9)
-    plot_model(model, to_file="lenet.png", show_shapes=True)
+    plot_model(model, to_file="miniVGG.png", show_shapes=True)
     model.compile(loss="binary_crossentropy", optimizer="adam")
     H = model.fit(
         trainX,
