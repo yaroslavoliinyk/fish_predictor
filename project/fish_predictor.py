@@ -18,6 +18,7 @@ from sklearn.metrics import classification_report
 from datasets.datasetloader import DatasetLoader
 from preprocessing.preprocessor import SimplePreprocessor
 from imutils import paths
+from pathlib import Path
 
 
 matplotlib.use("Agg")
@@ -85,8 +86,11 @@ def convert(source, dest):
         cv2.imwrite(dest + "/{0}/{1}".format(fish_class, fish_id), image)
 
 
+# Path to file that has the script:
+file_dir = os.path.dirname(__file__)
+project_dir = Path(file_dir).parent
 # convert("archive/NA_Fish_Dataset", "archive_converted_32"
-img_folder = "data/archive/NA_Fish_Dataset"
+img_folder = os.path.join(project_dir, "data/archive/NA_Fish_Dataset")
 preprocesssor = SimplePreprocessor(32, 32)
 dsl = DatasetLoader([preprocesssor])
 imagePaths = sorted(list(paths.list_images("{}".format(img_folder))))
@@ -99,8 +103,10 @@ def overwrite(testX, testY, path="data/test/"):
         cv2.imwrite(full_path, test_img)
 
 
-trainPath = "data/train/"
-testPath = "data/test/"
+trainPath = os.path.join(project_dir, "data/train/")
+testPath = os.path.join(project_dir, "data/test/")
+# trainPath = "data/train/"
+# testPath = "data/test/"
 
 
 # If overwrite data, then we preprocess it over again
