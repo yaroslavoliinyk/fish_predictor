@@ -33,52 +33,52 @@ class DatasetLoader:
         return (np.array(data), np.array(labels))
 
     # Load preprocessed images from disk to save time and not preprocess again
-    def load_from_disk(self, trainPath, testPath,):
-        trainX = []
-        trainY = []
-        testX = []
-        testY = []
-        train_file_list = glob.glob(os.path.join(trainPath, "*"))
-        for imagePath in train_file_list:
-            image = cv2.imread(imagePath)
-            # Example of preprocessed image name: '76_Shrimp.jpg'
-            imageName = imagePath.split(os.path.sep)[-1]
-            regex_label = re.search("[a-zA-Z ]+", imageName)
-            label = regex_label.group(0)
-            trainX.append(image)
-            trainY.append(label)
-        test_file_list = glob.glob(os.path.join(testPath, "*"))
-        for imagePath in test_file_list:
-            image = cv2.imread(imagePath)
-            # Example of preprocessed image name: '76_Shrimp.jpg'
-            imageName = imagePath.split(os.path.sep)[-1]
-            regex_label = re.search("[a-zA-Z ]+", imageName)
-            label = regex_label.group(0)
-            testX.append(image)
-            testY.append(label)
-        return trainX, testX, trainY, testY
+    # def load_from_disk(self, trainPath, testPath,):
+    #     trainX = []
+    #     trainY = []
+    #     testX = []
+    #     testY = []
+    #     train_file_list = glob.glob(os.path.join(trainPath, "*"))
+    #     for imagePath in train_file_list:
+    #         image = cv2.imread(imagePath)
+    #         # Example of preprocessed image name: '76_Shrimp.jpg'
+    #         imageName = imagePath.split(os.path.sep)[-1]
+    #         regex_label = re.search("[a-zA-Z ]+", imageName)
+    #         label = regex_label.group(0)
+    #         trainX.append(image)
+    #         trainY.append(label)
+    #     test_file_list = glob.glob(os.path.join(testPath, "*"))
+    #     for imagePath in test_file_list:
+    #         image = cv2.imread(imagePath)
+    #         # Example of preprocessed image name: '76_Shrimp.jpg'
+    #         imageName = imagePath.split(os.path.sep)[-1]
+    #         regex_label = re.search("[a-zA-Z ]+", imageName)
+    #         label = regex_label.group(0)
+    #         testX.append(image)
+    #         testY.append(label)
+    #     return trainX, testX, trainY, testY
 
-    def save(
-        self,
-        trainX,
-        testX,
-        trainY,
-        testY,
-        trainPath,
-        testPath,
-    ):
-        # remove previous saved train and test images
-        train_file_list = glob.glob(os.path.join(trainPath, "*"))
-        for f in train_file_list:
-            os.remove(f)
-        test_file_list = glob.glob(os.path.join(testPath, "*"))
-        for f in test_file_list:
-            os.remove(f)
-        # overwrite train images where image name == trainY label
-        for (i, train_img) in enumerate(trainX):
-            full_path = trainPath + str(i) + "_" + trainY[i] + ".jpg"
-            cv2.imwrite(full_path, train_img)
-        # overwrite test images where image name == testY label
-        for (i, test_img) in enumerate(testX):
-            full_path = testPath + str(i) + "_" + testY[i] + ".jpg"
-            cv2.imwrite(full_path, test_img)
+    # def save(
+    #     self,
+    #     trainX,
+    #     testX,
+    #     trainY,
+    #     testY,
+    #     trainPath,
+    #     testPath,
+    # ):
+    #     # remove previous saved train and test images
+    #     train_file_list = glob.glob(os.path.join(trainPath, "*"))
+    #     for f in train_file_list:
+    #         os.remove(f)
+    #     test_file_list = glob.glob(os.path.join(testPath, "*"))
+    #     for f in test_file_list:
+    #         os.remove(f)
+    #     # overwrite train images where image name == trainY label
+    #     for (i, train_img) in enumerate(trainX):
+    #         full_path = trainPath + str(i) + "_" + trainY[i] + ".jpg"
+    #         cv2.imwrite(full_path, train_img)
+    #     # overwrite test images where image name == testY label
+    #     for (i, test_img) in enumerate(testX):
+    #         full_path = testPath + str(i) + "_" + testY[i] + ".jpg"
+    #         cv2.imwrite(full_path, test_img)

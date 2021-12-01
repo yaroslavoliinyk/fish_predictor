@@ -69,58 +69,59 @@ class MiniVGGNet:
 
 
 # A block for preparing image to utilize Neural Network on images
-def convert(source, dest):
-    for imagePath in sorted(list(paths.list_images(source))):
-        # load image,  preprocess, save
-        image = cv2.imread(imagePath)
-        # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # dsize = (28, 28)
-        dsize = (32, 32)
-        image = cv2.resize(image, dsize, interpolation=cv2.INTER_AREA)
-        if not os.path.exists(dest):
-            os.mkdir(dest)
-        fish_class = imagePath.split("/")[-2]
-        fish_id = imagePath.split("/")[-1]
-        if not os.path.exists(dest + "/{}".format(fish_class)):
-            os.mkdir(dest + "/{}".format(fish_class))
-        cv2.imwrite(dest + "/{0}/{1}".format(fish_class, fish_id), image)
+# def convert(source, dest):
+#     for imagePath in sorted(list(paths.list_images(source))):
+#         # load image,  preprocess, save
+#         image = cv2.imread(imagePath)
+#         # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#         # dsize = (28, 28)
+#         dsize = (32, 32)
+#         image = cv2.resize(image, dsize, interpolation=cv2.INTER_AREA)
+#         if not os.path.exists(dest):
+#             os.mkdir(dest)
+#         fish_class = imagePath.split("/")[-2]
+#         fish_id = imagePath.split("/")[-1]
+#         if not os.path.exists(dest + "/{}".format(fish_class)):
+#             os.mkdir(dest + "/{}".format(fish_class))
+#         cv2.imwrite(dest + "/{0}/{1}".format(fish_class, fish_id), image)
 
 
 # Path to file that has the script:
 file_dir = os.path.dirname(__file__)
 project_dir = Path(file_dir).parent
 # convert("archive/NA_Fish_Dataset", "archive_converted_32"
-img_folder = os.path.join(project_dir, "data/archive/NA_Fish_Dataset")
+# img_folder = os.path.join(project_dir, "data/archive/NA_Fish_Dataset")
+img_folder = os.path.join(project_dir, "/input/a-large-scale-fish-dataset/NA_Fish_Dataset")
 preprocesssor = SimplePreprocessor(32, 32)
 dsl = DatasetLoader([preprocesssor])
 imagePaths = sorted(list(paths.list_images("{}".format(img_folder))))
 
 
-def overwrite(testX, testY, path="data/test/"):
-    # overwrite test images where image name == testY label
-    for (i, test_img) in enumerate(testX):
-        full_path = path + "/" + testY[i] + "_" + str(i) + ".jpg"
-        cv2.imwrite(full_path, test_img)
+# def overwrite(testX, testY, path="data/test/"):
+#     # overwrite test images where image name == testY label
+#     for (i, test_img) in enumerate(testX):
+#         full_path = path + "/" + testY[i] + "_" + str(i) + ".jpg"
+#         cv2.imwrite(full_path, test_img)
 
 
-trainPath = os.path.join(project_dir, "data/train/")
-testPath = os.path.join(project_dir, "data/test/")
+# trainPath = os.path.join(project_dir, "data/train/")
+# testPath = os.path.join(project_dir, "data/test/")
 # trainPath = "data/train/"
 # testPath = "data/test/"
 
 
 # If overwrite data, then we preprocess it over again
 # If not overwrite data, then we use saved and preprocessed train and test data
-def fit_model(overwriteData=False):
+def fit_model():
     # images, labels = read()
-    if overwriteData:
-        images, labels = dsl.load(imagePaths)
-        trainX, testX, trainY, testY = train_test_split(
-            images, labels, test_size=0.2, stratify=labels, random_state=42
-        )
-        dsl.save(trainX, testX, trainY, testY, trainPath, testPath)
-    else:
-        trainX, testX, trainY, testY = dsl.load_from_disk(trainPath, testPath)
+    # if overwriteData:
+    images, labels = dsl.load(imagePaths)
+    trainX, testX, trainY, testY = train_test_split(
+        images, labels, test_size=0.2, stratify=labels, random_state=42
+    )
+    # dsl.save(trainX, testX, trainY, testY, trainPath, testPath)
+# else:
+    #     trainX, testX, trainY, testY = dsl.load_from_disk(trainPath, testPath)
 
     # Data convertation
     trainX = np.array(trainX, dtype="float") / 255.0
@@ -134,7 +135,7 @@ def fit_model(overwriteData=False):
 
     print("[INFO] Training Network")
     model = MiniVGGNet.build(width=32, height=32, depth=3, classes=9)
-    plot_model(model, to_file="output/miniVGG.png", show_shapes=True)
+    # plot_model(model, to_file="output/miniVGG.png", show_shapes=True)
     model.compile(loss="binary_crossentropy", optimizer="adam")
     H = model.fit(
         trainX,
@@ -152,7 +153,7 @@ def fit_model(overwriteData=False):
         )
     )
     # save the model to disk
-    model.save("output/fish.hdf5")
+    # model.save("output/fish.hdf5")
 
 
 fit_model()
