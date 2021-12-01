@@ -134,7 +134,7 @@ def fit_model(overwriteData=False):
 
     print("[INFO] Training Network")
     model = MiniVGGNet.build(width=32, height=32, depth=3, classes=9)
-    plot_model(model, to_file="miniVGG.png", show_shapes=True)
+    plot_model(model, to_file="output/miniVGG.png", show_shapes=True)
     model.compile(loss="binary_crossentropy", optimizer="adam")
     H = model.fit(
         trainX,
@@ -152,7 +152,7 @@ def fit_model(overwriteData=False):
         )
     )
     # save the model to disk
-    model.save("fish.hdf5")
+    model.save("output/fish.hdf5")
 
 
 fit_model()
