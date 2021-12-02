@@ -1,6 +1,5 @@
 import matplotlib
 import numpy as np
-import cv2
 import os
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import BatchNormalization
@@ -68,24 +67,6 @@ class MiniVGGNet:
         return model
 
 
-# A block for preparing image to utilize Neural Network on images
-def convert(source, dest):
-    for imagePath in sorted(list(paths.list_images(source))):
-        # load image,  preprocess, save
-        image = cv2.imread(imagePath)
-        # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # dsize = (28, 28)
-        dsize = (32, 32)
-        image = cv2.resize(image, dsize, interpolation=cv2.INTER_AREA)
-        if not os.path.exists(dest):
-            os.mkdir(dest)
-        fish_class = imagePath.split("/")[-2]
-        fish_id = imagePath.split("/")[-1]
-        if not os.path.exists(dest + "/{}".format(fish_class)):
-            os.mkdir(dest + "/{}".format(fish_class))
-        cv2.imwrite(dest + "/{0}/{1}".format(fish_class, fish_id), image)
-
-
 # Path to file that has the script:
 file_dir = os.path.dirname(__file__)
 project_dir = Path(file_dir).parent
@@ -95,18 +76,8 @@ preprocesssor = SimplePreprocessor(32, 32)
 dsl = DatasetLoader([preprocesssor])
 imagePaths = sorted(list(paths.list_images("{}".format(img_folder))))
 
-
-def overwrite(testX, testY, path="data/test/"):
-    # overwrite test images where image name == testY label
-    for (i, test_img) in enumerate(testX):
-        full_path = path + "/" + testY[i] + "_" + str(i) + ".jpg"
-        cv2.imwrite(full_path, test_img)
-
-
 trainPath = os.path.join(project_dir, "data/train/")
 testPath = os.path.join(project_dir, "data/test/")
-# trainPath = "data/train/"
-# testPath = "data/test/"
 
 
 # If overwrite data, then we preprocess it over again
